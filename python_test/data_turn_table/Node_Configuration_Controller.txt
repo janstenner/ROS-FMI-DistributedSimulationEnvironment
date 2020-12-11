@@ -1,0 +1,13 @@
+{
+   "ros_in":"[\"/ControllerInput\", [\"fmuA\", [\"f_target\", \"w_actual\"]]]",
+   "ros_in_types":"{\"f_target\":0, \"w_actual\":1}",
+   "ros_out":"{\"/ControllerOutput\":[[\"fmuA\",[\"brake_signal\", \"f_controller\"]]]}",
+   "ros_connections":"[]",
+   "ros_fmus":[
+      [
+         "fmuA",
+         "[\"f_target\", \"w_actual\"]",
+         "[\"brake_signal\", \"f_controller\"]"
+      ]
+   ]
+}

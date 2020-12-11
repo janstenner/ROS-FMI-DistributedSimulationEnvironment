@@ -1,0 +1,13 @@
+{
+  "ros_in": "[\"/move_group/fake_controller_joint_states\", [\"fmuA\", [\"Extend\", \"Retrect\", \"ExternTorque\", \"MaxEngle\", \"Pressure\", \"ThrotleExtend\", \"ThrotleRetrect\"]]]",
+  "ros_in_types":"{\"Extend\":0, \"Retrect\":0, \"ExternTorque\":0, \"MaxEngle\":0, \"Pressure\":0, \"ThrotleExtend\":0, \"ThrotleRetrect\":0}",
+  "ros_out": "{\"/FMUOutput\":[[\"fmuA\",[\"CurrentEngle\",\"AirConsumtion\",\"AirFlow\",\"Retrected\",\"Extended\"]]]}",
+  "ros_connections": "[]",
+  "ros_fmus": [
+    [
+      "fmuA",
+      "[\"Extend\", \"Retrect\", \"ExternTorque\", \"MaxEngle\", \"Pressure\", \"ThrotleExtend\", \"ThrotleRetrect\"]",
+      "[\"CurrentEngle\",\"AirConsumtion\",\"AirFlow\",\"Retrected\",\"Extended\"]"
+    ]
+  ]
+}

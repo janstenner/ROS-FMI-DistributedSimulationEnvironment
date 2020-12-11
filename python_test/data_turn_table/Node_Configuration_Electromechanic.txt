@@ -1,0 +1,13 @@
+{
+   "ros_in":"[\"/ControllerOutput\", [\"fmuB\", [\"brake_signal\", \"f_controller\"]]]",
+   "ros_in_types":"{\"brake_signal\":1, \"f_controller\":1}",
+   "ros_out":"{\"/ElectromechanicOutput\":[[\"fmuB\",[\"E\", \"P_el\", \"P_mech\", \"eta\", \"phi\"]]], \"/ControllerInput\":[[\"fmuB\",[ \"w_actual\"]]]}",
+   "ros_connections":"[]",
+   "ros_fmus":[
+      [
+         "fmuB",
+         "[\"brake_signal\", \"f_controller\"]",
+         "[\"E\", \"P_el\", \"P_mech\", \"eta\", \"phi\", \"w_actual\"]"
+      ]
+   ]
+}

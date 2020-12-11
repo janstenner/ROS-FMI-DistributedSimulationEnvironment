@@ -1,0 +1,17 @@
+{
+  "ros_in": "[\"/move_group/fake_controller_joint_states\", [\"fmuA\", [\"f_target\"]]]",
+  "ros_out": "{\"/FMUOutput\":[[\"fmuB\",[\"E\",\"phi\",\"P_el\",\"P_mech\",\"eta\",\"phi\"]]]}",
+  "ros_connections": "[[[\"fmuA\",\"brake_signal\"],[\"fmuB\",\"brake_signal\"]],[[\"fmuA\",\"f_controller\"],[\"fmuB\",\"f_controller\"]],[[\"fmuB\",\"w_actual\"],[\"fmuA\",\"w_actual\"]]]",
+  "ros_fmus": [
+    [
+      "fmuA",
+      "[\"f_target\", \"w_actual\"]",
+      "[\"brake_signal\", \"f_controller\"]"
+    ],
+    [
+      "fmuB",
+      "[\"brake_signal\", \"f_controller\"]",
+      "[\"E\", \"P_el\", \"P_mech\", \"eta\", \"phi\", \"w_actual\"]"
+    ]
+  ]
+}

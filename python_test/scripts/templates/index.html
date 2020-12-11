@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Dashboard Prototype</title>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.css" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/custom.css') }}">
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div id="main_row" class="row">
+				<div id="node_list_div" class="col-3">
+					<div id="node_list" class="list-group btn-group-vertical btn-group-toggle"  data-toggle="buttons"></div>
+				</div>
+				<div class="col-9">
+					<!-- Tabs header START -->
+					<ul class="nav nav-tabs" id="myTab" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="node_info-tab" data-toggle="tab" href="#node_info" role="tab" aria-controls="node_info" aria-selected="true">Info</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="node_config-tab" data-toggle="tab" href="#node_config" role="tab" aria-controls="node_config" aria-selected="false">Configuration</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="node_graph-tab" data-toggle="tab" href="#node_graph" role="tab" aria-controls="node_graph" aria-selected="false">Graph</a>
+						</li>
+					</ul>
+					<!-- Tabs header END -->
+					<!-- Tabs content START -->
+					<div class="tab-content" id="myTabContent">
+						<div class="tab-pane fade show active" id="node_info" role="tabpanel" aria-labelledby="node_info-tab"></div>
+						<div class="tab-pane fade" id="node_config" role="tabpanel" aria-labelledby="node_config-tab"></div>
+						<div class="tab-pane fade" id="node_graph" role="tabpanel" aria-labelledby="node_graph-tab"></div>
+					</div>
+					<!-- Tabs content END -->
+				</div>
+			</div>
+		</div>
+
+		<!--suppress JSUnresolvedLibraryURL -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+		<!--suppress JSUnresolvedLibraryURL -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+		<!--suppress JSUnresolvedLibraryURL -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js"></script>
+
+		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+
+		<!-- 
+			TODO: let the configuration tab be used to edit single entries 
+			-> problem with the .fmu files as they are not present on the configuring system 	
+			-> need to track what is actually changed?
+		-->
+
+		<!-- Template for graph tab -->
+		<template id="node_graph_template">
+			<div class="container">
+				<div class="row">
+					<div class="col-12">
+						<select id="graph_topic_selector"></select>
+						<button id="start_graph_button" class="btn btn-secondary" type="button">Start Graph</button>
+						<button id="stop_graph_button" class="btn btn-secondary" type="button">Stop Graph</button>
+						<div class="card">
+							<div class="card-body">
+								<canvas id="graph_canvas"></canvas>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</template>
+		
+		<!-- Template for fmu configuration entries -->
+		<template id="fmu_file_entry_template">
+			<div class="fmu_file_entry_container">
+				<div class="input-group">
+					<input type="text" placeholder="Unique FMU name" class="form-control fmu_unique_name_input">
+					<div class="custom-file">
+						<input accept=".fmu" type="file" class="custom-file-input" id="myInput" aria-describedby="myInput">
+						<label class="custom-file-label" for="myInput">Choose file</label>
+					</div>
+					<div class="input-group-append">
+						<button class="delete-button btn btn-outline-secondary" type="button">X</button>
+					</div>
+				</div>
+				<div class="input-group">
+					<input type="text" placeholder="FMU inputs" class="form-control fmu_inputs_input">
+					<input type="text" placeholder="FMU outputs" class="form-control fmu_outputs_input">
+				</div>
+			</div>
+		</template>
+		
+		<!-- Template for the configuration tab -->
+		<template id="configuration_template">
+			<input id="config_file_input" type="file" style="display:none"/>
+			<button id="load_config_file" type="button" class="btn btn-secondary">Load config file</button>
+			<button id="save_config_file" type="button" class="btn btn-secondary">Save config file</button>
+			
+			<div class="card">
+				<div class="card-header">FMUs</div>
+				<div id="fmu_files" class="card-body"></div> 
+				<div class="card-footer">
+					<button type="button" id="new_fmu_entry_button" class="btn btn-secondary">New FMU entry</button>
+				</div>
+			</div>
+			
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">Connections</span>
+				</div>
+				<textarea id="config_connections" class="form-control" aria-label="Connections"></textarea>
+			</div>
+			
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">ROS-Inputs</span>
+				</div>
+				<textarea id="config_ros_input" class="form-control" aria-label="ROS-Inputs"></textarea>
+                <textarea id="config_ros_input_types" class="form-control" aria-label="ROS-Input-Types"></textarea>
+			</div>
+			
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">ROS-Outputs</span>
+				</div>
+				<textarea id="config_ros_output" class="form-control" aria-label="ROS-Outputs"></textarea>
+			</div>
+			<button id="upload_to_node" type="button" class="btn btn-secondary btn-lg btn-block">Upload to Node</button>
+		</template>
+		
+		<!-- Template for the node entry list items -->
+		<template id="node_entry_template">
+			<label class="btn btn-secondary active btn-overflow-ellipsis">
+				<span id="node_entry_name"></span>
+				<input type="radio" name="options"/>
+			</label>
+		</template>
+				
+		<template id="node_info_template">
+			<p id="node_info_id">Node-ID: </p>
+			<p id="node_info_hostname">Hostname: </p>
+			<p id="node_info_fmus">FMUs: </p>
+			<p id="node_info_connections">Connections: </p>
+			<p id="node_info_ros_input">ROS-Input: </p> 
+			<p id="node_info_ros_output">ROS-Output: </p>
+		</template>
+				
+		
+		<script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+	</body>
+</html>
+
